@@ -1,0 +1,45 @@
+version: '3.0'
+services:
+  db:
+    container_name: db
+    image: postgres:12
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    networks:
+      - postgres_network
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    env_file:
+      - .env
+    ports:
+      - "16543:80"
+    networks:
+      - postgres_network
+    depends_on:
+      - db
+
+  api:
+    # path where dockerfile is
+    build: ./api/
+    # start running
+    command: python app.py 
+    # set app ports
+    ports:
+      - "5000:5000"
+    # sync local files to container | same_path_on_build:workdir_on_dockerfile
+    volumes:
+      - ./api/:/usr/src/project/api # change {project} for your project's name
+    # set environment variables
+    env_file:
+      - .env
+    # connect to another container
+    networks:
+      - postgres_network
+
+networks: 
+  postgres_network:
+    driver: bridge
