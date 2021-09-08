@@ -23,6 +23,8 @@ services:
       - db
 
   api:
+    # name of container
+    container_name: api
     # path where dockerfile is
     build: ./api/
     # start running
